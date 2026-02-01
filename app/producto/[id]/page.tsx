@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { productos } from '@/app/data/productos';
 import { notFound } from 'next/navigation';
+import AddToCartButton from '@/app/components/molecules/AddToCartButton';
+import { ArrowLeftIcon } from 'lucide-react';
 
 interface Props {
   params: Promise<{
@@ -21,12 +23,12 @@ export default async function ProductoDetalle({ params }: Props) {
   return (
     <div className="min-h-screen bg-zinc-200/30 py-12">
       <div className="container mx-auto px-4">
-        {/* Bot�n volver */}
+        {/* Botón volver */}
         <Link
           href="/"
           className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-8"
-        >
-          � Volver al cat�logo
+        >  <ArrowLeftIcon className="w-4 h-4 mr-2" />
+          Volver a la página principal
         </Link>
 
         {/* Detalle del producto */}
@@ -58,14 +60,12 @@ export default async function ProductoDetalle({ params }: Props) {
                 </span>
               </div>
 
-              {/* Botones de acci�n */}
+              {/* Botones de acción */}
               <div className="space-y-4">
-                <button className="w-full bg-purple-500 text-white py-3 px-6 rounded-lg hover:bg-purple-600 transition text-lg font-semibold">
-                  Agregar al carrito
-                </button>
+                <AddToCartButton producto={producto} />
 
                 <a
-                  href={`https://wa.me/573001234567?text=${encodeURIComponent(
+                  href={`https://wa.me/593985569110?text=${encodeURIComponent(
                     `�Hola! Estoy interesado en: ${producto.nombre} - $${producto.precio.toLocaleString('es-CO')}`
                   )}`}
                   target="_blank"
@@ -80,9 +80,9 @@ export default async function ProductoDetalle({ params }: Props) {
               <div className="mt-8 pt-8 border-t border-gray-200">
                 <h3 className="font-semibold text-gray-800 mb-2">Informaci�n del producto</h3>
                 <ul className="text-gray-600 space-y-2">
-                  <li> Disponible para entrega</li>
-                  <li> Producto de alta calidad</li>
-                  <li> Ideal para manualidades</li>
+                  <li> Disponible para entrega</li>
+                  <li> Producto de alta calidad</li>
+                  <li> Ideal para manualidades</li>
                 </ul>
               </div>
             </div>
