@@ -37,7 +37,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
       />
 
       {/* Sidebar */}
-      <div className="fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-xl z-50 flex flex-col">
+      <div className="fixed right-0 top-0 h-full w-full md:w-96 bg-[#f7b733] shadow-xl z-50 flex flex-col sm:rounded-l-xl">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b">
           <h2 className="text-xl font-bold text-gray-800">Carrito de Compras</h2>
@@ -50,7 +50,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
         </div>
 
         {/* Contenido */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 bg-white/94">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-400">
               <p>Tu carrito está vacío</p>

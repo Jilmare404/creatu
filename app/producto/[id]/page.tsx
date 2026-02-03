@@ -21,12 +21,12 @@ export default async function ProductoDetalle({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-200/30 py-12">
+    <div className="min-h-screen bg-white/94 py-12">
       <div className="container mx-auto px-4">
         {/* Botón volver */}
         <Link
           href="/"
-          className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-8"
+          className="inline-flex items-center text-black mb-8 bg-zinc-800/10 rounded-md p-2"
         >  <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Volver a la página principal
         </Link>
@@ -66,7 +66,7 @@ export default async function ProductoDetalle({ params }: Props) {
 
                 <a
                   href={`https://wa.me/593985569110?text=${encodeURIComponent(
-                    `�Hola! Estoy interesado en: ${producto.nombre} - $${producto.precio.toLocaleString('es-CO')}`
+                    `Hola! Estoy interesado en: ${producto.nombre} - $${producto.precio.toLocaleString('es-CO')}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
