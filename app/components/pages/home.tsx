@@ -1,26 +1,34 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { productos } from '@/app/data/productos';
 import { useCartStore } from '@/app/store/cartStore';
+import { useCategoriaStore } from '@/app/store/categoriaStore';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Plus   } from 'lucide-react';
 
 const Home = () => {
+  const { categoriaSeleccionada, setCategoriaSeleccionada } = useCategoriaStore();
+
   const productosDestacados = productos.filter(p => p.destacado);
+  const productosFiltrados = categoriaSeleccionada
+    ? productos.filter(p => p.categorias.includes(categoriaSeleccionada))
+    : productos;
+
   const addItem = useCartStore((state) => state.addItem);
+  const items = useCartStore((state) => state.items);
 
   return (
-    <div className='min-h-screen bg-white/94'>
+    <div className='min-h-screen bg-white'>
 
 
-      <div className='grid grid-cols-2'>
+      <div className='grid grid-cols-2 '>
         <div className='text-red-500'>aaaaaaaaaaaaaaaaaa</div>
         <div className='h-65 md:h-screen bg-[#5dc1b9]'>
         </div>
@@ -37,117 +45,162 @@ const Home = () => {
       </div>
 
       {/* Productos Destacados - Carousel */}
-      <section className="container mx-auto px-4 sm:py-10">
+      <section className="container mx-auto px-2 sm:py-10">
           <h2 className="sm:text-3xl  font-bold text-gray-800 text-center max-sm:hidden">
             Productos Destacados
           </h2>
 
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={30}
+          spaceBetween={10}
           slidesPerView={2}
           navigation
           pagination={{ clickable: true }}
           autoplay={{ delay: 3000, disableOnInteraction: false }}
           breakpoints={{
             640: { slidesPerView: 3 },
-            768: { slidesPerView: 4 },
+            768: { slidesPerView: 3 },
             1024: { slidesPerView: 5 }
           }}
           className=""
         >
           {productosDestacados.map((producto) => (
             <SwiperSlide key={producto.id} className="py-8">
-              <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full ">
-                <Link href={`/producto/${producto.id}`} className="block">
-                  <div className="relative h-30 sm:h-60 bg-gray-100">
+              <div className="rounded-md overflow-hidden hover:shadow-xl/20 transition-shadow duration-300 h-full">
+                <Link href={`/producto/${producto.id}`} className="block ">
+                  <div className="relative h-40 sm:h-60 sm:p-2 ">
                     <Image
                       src={producto.imagen}
                       alt={producto.nombre}
                       fill
-                      className="object-cover hover:scale-105 transition-transform duration-300"
+                      className="p-2 rounded-xl hover:scale-106 transition-transform duration-300"
                     />
                   </div>
-
-                  <div className="pt-2 px-2 flex justify-center items-center gap-2 sm:gap-4">
-                    <h3 className="sm:text-lg font-semibold text-gray-800">
-                      {producto.nombre}
-                    </h3>
-                    <div className="flex items-center justify-between">
-                      <span className="sm:text-lg font-bold text-purple-600">
-                        ${producto.precio.toLocaleString('es-CO')}
-                      </span>
-                    </div>
-                    <button 
-                      onClick={() => addItem(producto)}
-                      className="bg-zinc-800/40 text-white p-2 rounded-full hover:bg-[#338b85] transition cursor-pointer">
-                        <ShoppingCart className='size-5 sm:size-7'/>
-                    </button>
-                  </div>
-                  <div className="flex justify-center items-center gap-2">
-                    <h3
-                      className="bg-[#dfce3] text-gray-700 max-sm:text-sm sm:px-4 mb-2 rounded-lg"
-                    >
-                      Ver más
-                    </h3>
-                  </div>
                 </Link>
+                <div className='flex justify-between items-center m-2 tracking-tight leading-none'>
+                  <div className='flex flex-col'>
+                    <div className="px-2 flex justify-center items-center gap-2">
+                      <h3 className="sm:text-lg text-gray-800">
+                        {producto.nombre}
+                      </h3>
+                      <div className="flex items-center justify-between">
+                        <span className="sm:text-lg font-bold text-black">
+                          ${producto.precio.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
 
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      addItem(producto);
+                    }}
+                    className={`text-white p-1.5 rounded-full transition-all duration-200 cursor-pointer active:scale-90 ${
+                      items.find(item => item.id === producto.id)
+                        ? 'bg-[#338b85] animate-pulse'
+                        : 'bg-zinc-800/40 hover:bg-[#338b85]'
+                    }`}>
+                      {items.find(item => item.id === producto.id) ? (
+                        <ShoppingCart className='size-5 sm:size-7'/>
+                      ) : (
+                        <Plus className='size-5 sm:size-7'/>
+                      )}
+                  </button>
+                </div>
               </div>
             </SwiperSlide>
           ))}
         </Swiper>
       </section>
+      
+      <div className='w-full p-5 sm:mb-10 mb-6 flex items-center bg-zinc-800/10'>
+        <div className='flex items-center gap-4 w-full justify-center text-white text-sm sm:text-xl'>
+          <h3
+            onClick={() => setCategoriaSeleccionada('flores')}
+            className={`p-1.5 rounded-md font-semibold w-35 text-center cursor-pointer transition ${
+              categoriaSeleccionada === 'flores' ? 'bg-[#338b85] scale-110' : 'bg-[#5dc1b9] hover:bg-[#338b85]'
+            }`}
+          >
+            Flores
+          </h3>
+          <h3
+            onClick={() => setCategoriaSeleccionada('anime')}
+            className={`p-1.5 rounded-md font-semibold w-35 text-center cursor-pointer transition ${
+              categoriaSeleccionada === 'anime' ? 'bg-[#338b85] scale-110' : 'bg-[#5dc1b9] hover:bg-[#338b85]'
+            }`}
+          >
+            Anime
+          </h3>
+          <h3
+            onClick={() => setCategoriaSeleccionada('animales')}
+            className={`p-1.5 rounded-md font-semibold w-35 text-center cursor-pointer transition ${
+              categoriaSeleccionada === 'animales' ? 'bg-[#338b85] scale-110' : 'bg-[#5dc1b9] hover:bg-[#338b85]'
+            }`}
+          >
+            Animales
+          </h3>
+          <h3
+            onClick={() => setCategoriaSeleccionada(null)}
+            className={`p-1.5 rounded-md font-semibold w-35 text-center cursor-pointer transition ${
+              categoriaSeleccionada === null ? 'bg-[#338b85] scale-110' : 'bg-[#5dc1b9] hover:bg-[#338b85]'
+            }`}
+          >
+            Todos
+          </h3>
+        </div>
+      </div>
 
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-          Todos los productos
-        </h2>
+      <h2 className="sm:text-3xl text-xl font-bold text-gray-800 text-center bg-white">
+        {categoriaSeleccionada ? categoriaSeleccionada.charAt(0).toUpperCase() + categoriaSeleccionada.slice(1) : 'Todos los productos'}
+      </h2>
+      <section className="container mx-auto px-2 py-4 sm:p-6 bg-white">
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-          {productos.map((producto) => (
-            <div key={producto.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <Link href={`/producto/${producto.id}`} className="block">
-                <div className="relative h-35 sm:h-60 bg-gray-100">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {productosFiltrados.map((producto) => (
+            <div key={producto.id} className="bg-white rounded-md overflow-hidden hover:shadow-xl/20 transition-shadow duration-300 h-full">
+              <Link href={`/producto/${producto.id}`} className="block ">
+                <div className="relative h-40 sm:h-60 p-2">
                   <Image
                     src={producto.imagen}
                     alt={producto.nombre}
                     fill
-                    className="object-cover hover:scale-105 transition-transform duration-300"
+                    className="rounded-xl p-2 hover:scale-106 transition-transform duration-300"
                   />
                 </div>
-
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                    {producto.nombre}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4 hidden">
-                    {producto.descripcion}
-                  </p>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-bold text-purple-600">
-                      ${producto.precio.toLocaleString('es-CO')}
-                    </span>
-                  </div>
-                </div>
               </Link>
+              <div className='flex justify-between items-center m-2 tracking-tight leading-none'>
+                <div className='flex flex-col'>
+                  <div className="px-2 flex justify-center items-center gap-2">
+                    <h3 className="sm:text-lg text-gray-800">
+                      {producto.nombre}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <span className="sm:text-lg font-bold text-black">
+                        ${producto.precio.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
 
-              <div className="px-6 pb-6 flex gap-2">
+                </div>
                 <button
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     addItem(producto);
                   }}
-                  className="flex-1 bg-[#338b85] text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition cursor-pointer"
-                >
-                  Agregar al carrito
+                  className={`text-white p-1.5 rounded-full transition-all duration-200 cursor-pointer active:scale-90 ${
+                    items.find(item => item.id === producto.id)
+                      ? 'bg-[#338b85] animate-pulse'
+                      : 'bg-zinc-800/40 hover:bg-[#338b85]'
+                  }`}>
+                    {items.find(item => item.id === producto.id) ? (
+                      <ShoppingCart className='size-5 sm:size-7'/>
+                    ) : (
+                      <Plus className='size-5 sm:size-7'/>
+                    )}
                 </button>
-                <Link
-                  href={`/producto/${producto.id}`}
-                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
-                >
-                  Ver más
-                </Link>
               </div>
             </div>
           ))}
